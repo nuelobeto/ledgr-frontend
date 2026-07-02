@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios"
-import { NextRequest } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
+import { setSessionCookies, clearSessionCookies } from "@/lib/auth-cookies"
 
 const BASE_URL = process.env.BASE_URL!
 
@@ -57,4 +58,24 @@ export async function callWithAuth<T = unknown>(
   res = await attempt(refreshed.accessToken)
 
   return { data: res.data, status: res.status, refreshed }
+}
+
+// Thin wrapper around callWithAuth for the common case: forward the upstream status/body
+// as-is, and apply the same cookie fallout every Bearer-only route needs — clear the session
+// on a final 401, or persist the rotated pair if a silent refresh happened mid-call. Route
+// handlers that need to inspect/transform the response (e.g. mfa/verify's cookie-on-success
+// branch) should keep calling callWithAuth directly instead.
+export async function proxyWithAuth<T = unknown>(
+  req: NextRequest,
+  path: string,
+  config: AxiosRequestConfig = {}
+): Promise<NextResponse> {
+  const result = await callWithAuth<T>(req, path, config)
+
+  const res = NextResponse.json(result.data, { status: result.status })
+
+  if (result.status === 401) clearSessionCookies(res)
+  else if (result.refreshed) setSessionCookies(res, result.refreshed)
+
+  return res
 }

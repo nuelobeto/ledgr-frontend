@@ -26,6 +26,11 @@ export interface IMfaVerify {
   code: string
 }
 
+export interface IChangePassword {
+  currentPassword: string
+  newPassword: string
+}
+
 // Shared shape for the auth endpoints that just return a status message
 // (register, forgot-password, reset-password, logout, mfa/disable...).
 export interface IMessageResponse {

@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 const sizeClasses = {
   sm: "text-xs",
   md: "text-sm",
-  lg: "text-base",
+  lg: "text-2xl",
 } as const
 
 interface LogoProps {
@@ -16,17 +16,17 @@ interface LogoProps {
   className?: string
 }
 
-export function Logo({ href = "/", size = "md", className }: LogoProps) {
+export function Logo({ href = "/", size = "lg", className }: LogoProps) {
   const mark = (
     <span
       data-slot="logo"
       className={cn(
-        "font-heading font-medium tracking-tight select-none",
+        "font-heading font-bold tracking-tight text-primary select-none",
         sizeClasses[size],
         className
       )}
     >
-      ledgr
+      Ledgr.
     </span>
   )
 
@@ -35,7 +35,7 @@ export function Logo({ href = "/", size = "md", className }: LogoProps) {
   return (
     <Link
       href={href}
-      className="rounded-none outline-none transition-opacity hover:opacity-80 focus-visible:ring-1 focus-visible:ring-ring/50"
+      className="rounded-none transition-opacity outline-none hover:opacity-80 focus-visible:ring-1 focus-visible:ring-ring/50"
     >
       {mark}
     </Link>

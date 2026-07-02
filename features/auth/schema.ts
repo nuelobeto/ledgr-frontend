@@ -63,3 +63,19 @@ export const resetPasswordSchema = z
   })
 
 export type ResetPasswordSchemaFormValues = z.infer<typeof resetPasswordSchema>
+
+export const changePasswordSchema = z
+  .object({
+    // No strength check on the current password — that's just proving you still know it,
+    // ChangePasswordAsync validates it server-side and fails with "Current password is
+    // incorrect." if it's wrong. Re-running the policy here would be pointless.
+    currentPassword: z.string().min(1, "Current password is required."),
+    newPassword: passwordSchema,
+    confirmPassword: z.string().min(1, "Please confirm your new password."),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  })
+
+export type ChangePasswordSchemaFormValues = z.infer<typeof changePasswordSchema>
