@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   IRegister,
   ILogin,
@@ -6,6 +6,7 @@ import {
   IForgotPassword,
   IResetPassword,
   IMfaVerify,
+  IChangePassword,
 } from "./types"
 import services from "./services"
 
@@ -72,6 +73,27 @@ export const useMfaVerifyMutation = () => {
   return useMutation({
     mutationFn: (payload: IMfaVerify) => {
       return services.mfaVerify(payload)
+    },
+  })
+}
+
+export const useChangePasswordMutation = () => {
+  return useMutation({
+    mutationFn: (payload: IChangePassword) => {
+      return services.changePassword(payload)
+    },
+  })
+}
+
+export const useLogoutMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => services.logout(),
+    // Wipe everything, not just ["users","me"] — the next person to use this browser
+    // shouldn't see a flash of the previous account's cached data before it refetches.
+    onSettled: () => {
+      queryClient.clear()
     },
   })
 }

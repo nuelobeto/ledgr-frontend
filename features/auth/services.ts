@@ -6,6 +6,7 @@ import {
   IForgotPassword,
   IResetPassword,
   IMfaVerify,
+  IChangePassword,
   IMessageResponse,
   ILoginResponse,
   IMfaEnrollResponse,
@@ -54,6 +55,16 @@ const mfaVerify = async (payload: IMfaVerify) => {
   return data
 }
 
+const logout = async () => {
+  const { data } = await axios.post<IMessageResponse>("/api/auth/logout")
+  return data
+}
+
+const changePassword = async (payload: IChangePassword) => {
+  const { data } = await axios.post<IMessageResponse>("/api/auth/change-password", payload)
+  return data
+}
+
 const services = {
   register,
   login,
@@ -62,6 +73,8 @@ const services = {
   resetPassword,
   mfaEnroll,
   mfaVerify,
+  logout,
+  changePassword,
 }
 
 export default services
